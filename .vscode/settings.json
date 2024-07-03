@@ -1,0 +1,9 @@
+{
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.compilerPath": "/usr/bin/clang++",
+    "files.associations": {
+        "qapplication": "cpp",
+        "new": "cpp"
+    },
+    "cmake.configureOnOpen": true
+}
