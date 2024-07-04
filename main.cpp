@@ -3,37 +3,42 @@
 #include <QSlider>
 #include <QLabel>
 #include <QFont>
+#include <QPalette>
 #include <iostream>
 #include "include/Network.h"
 
 Network network;
 
-void handleButton();
+void handleEnable();
 
+void handleDisable();
+
+QPushButton *enableButton;
+QPushButton *disableButton;
 
 int main(int argc, char *argv[])
 {
     network.Start();
-
+    
     QApplication a(argc, argv);
 
     QWidget window;
     window.setMinimumSize(500, 500);
     window.setWindowTitle("µChariot Driverstation");
 
-    QLabel* enableHeader = new QLabel(&window);
+    QLabel *enableHeader = new QLabel(&window);
     enableHeader->setText("Enable/Disable");
     enableHeader->setGeometry(10, 10, 100, 10);
 
-    QPushButton *enableButton = new QPushButton("Enable", &window);
-    QPushButton *disableButton = new QPushButton("Disable", &window);
+    enableButton = new QPushButton("Enable", &window);
+    disableButton = new QPushButton("Disable", &window);
 
     enableButton->setGeometry(10, 30, 80, 30);
+    enableButton->setFlat(true);
     disableButton->setGeometry(90, 30, 80, 30);
+    disableButton->setFlat(true);
 
-    QLabel *sliderLabel = new QLabel(&window);
-    sliderLabel->setText("Max Speed");
-    sliderLabel->setGeometry(10, 70, 100, 10);
+    handleDisable();
 
     QSlider *slider = new QSlider(&window);
     slider->setOrientation(Qt::Horizontal);
@@ -41,14 +46,31 @@ int main(int argc, char *argv[])
     slider->setValue(0);
     slider->setGeometry(10, 90, 180, 30);
 
-    QObject::connect(enableButton, &QPushButton::clicked, handleButton);
+    QObject::connect(enableButton, &QPushButton::clicked, handleEnable);
+    QObject::connect(disableButton, &QPushButton::clicked, handleDisable);
 
     window.show();
     return a.exec();
 }
 
-void handleButton()
+void changeButtonColor(QPushButton *button, Qt::GlobalColor color)
 {
-    std::cout << "enabled" << std::endl;
-    network.sendPacket();
+    QPalette pal = button->palette();
+    pal.setColor(QPalette::Button, QColor(color));
+
+    button->setAutoFillBackground(true);
+    button->setPalette(pal);
+    button->update();
+}
+
+void handleEnable()
+{
+    changeButtonColor(disableButton, Qt::gray);
+    changeButtonColor(enableButton, Qt::green);
+}
+
+void handleDisable()
+{
+    changeButtonColor(enableButton, Qt::gray);
+    changeButtonColor(disableButton, Qt::red);
 }

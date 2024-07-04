@@ -6,7 +6,9 @@
 
 class Network {
     public:
+        int clientSocket;
         void sendPacket();
         void Start();
+        void setRobotSpeed();
 
 };

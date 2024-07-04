@@ -15,6 +15,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 set(PROJECT_SOURCES
         main.cpp
         Network.cpp
+        Joystick.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -66,3 +67,21 @@ install(TARGETS uchariot-qt-driverstation
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(uchariot-qt-driverstation)
 endif()
+# break
+
+set(SDL2_DIR "/opt/homebrew/Cellar/sdl2/2.30.4")
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS})
+link_directories(${SDL2_LIBDIR})
+
+# Ensure SDL2 libraries are linked correctly
+if(NOT SDL2_LIBRARIES)
+    set(SDL2_LIBRARIES SDL2::SDL2)
+endif()
+
+# add_executable(LogitechController main.cpp)
+# target_link_libraries(LogitechController ${SDL2_LIBRARIES})
+# target_include_directories(LogitechController PUBLIC ${SDL2_INCLUDE_DIRS})
+
+# Link SDL2 libraries with uChariotBase as well
+target_link_libraries(uchariot-qt-driverstation ${SDL2_LIBRARIES})
