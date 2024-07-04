@@ -1,13 +1,16 @@
 #include <QApplication>
+#include <QFont>
+#include <QLabel>
+#include <QPalette>
 #include <QPushButton>
 #include <QSlider>
-#include <QLabel>
-#include <QFont>
-#include <QPalette>
 #include <iostream>
+
+#include "include/Joystick.h"
 #include "include/Network.h"
 
 Network network;
+Joystick joystick;
 
 void handleEnable();
 
@@ -16,10 +19,10 @@ void handleDisable();
 QPushButton *enableButton;
 QPushButton *disableButton;
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     network.Start();
-    
+    joystick.joystick();
+
     QApplication a(argc, argv);
 
     QWidget window;
@@ -53,8 +56,7 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 
-void changeButtonColor(QPushButton *button, Qt::GlobalColor color)
-{
+void changeButtonColor(QPushButton *button, Qt::GlobalColor color) {
     QPalette pal = button->palette();
     pal.setColor(QPalette::Button, QColor(color));
 
@@ -63,14 +65,12 @@ void changeButtonColor(QPushButton *button, Qt::GlobalColor color)
     button->update();
 }
 
-void handleEnable()
-{
+void handleEnable() {
     changeButtonColor(disableButton, Qt::gray);
     changeButtonColor(enableButton, Qt::green);
 }
 
-void handleDisable()
-{
+void handleDisable() {
     changeButtonColor(enableButton, Qt::gray);
     changeButtonColor(disableButton, Qt::red);
 }

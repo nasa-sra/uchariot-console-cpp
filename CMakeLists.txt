@@ -79,9 +79,5 @@ if(NOT SDL2_LIBRARIES)
     set(SDL2_LIBRARIES SDL2::SDL2)
 endif()
 
-# add_executable(LogitechController main.cpp)
-# target_link_libraries(LogitechController ${SDL2_LIBRARIES})
-# target_include_directories(LogitechController PUBLIC ${SDL2_INCLUDE_DIRS})
-
-# Link SDL2 libraries with uChariotBase as well
+# Link SDL2 libraries with ONLY uChariotBase
 target_link_libraries(uchariot-qt-driverstation PRIVATE ${SDL2_LIBRARIES})
