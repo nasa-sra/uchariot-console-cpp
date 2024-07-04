@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(uchariot-qt-driverstation VERSION 0.1 LANGUAGES CXX)
+project(driverstation VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -27,37 +27,37 @@ file(GLOB_RECURSE PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(uchariot-qt-driverstation
+    qt_add_executable(driverstation
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET uchariot-qt-driverstation APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#    set_property(TARGET driverstation APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
-        add_library(uchariot-qt-driverstation SHARED
+        add_library(driverstation SHARED
             ${PROJECT_SOURCES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(uchariot-qt-driverstation
+        add_executable(driverstation
             ${PROJECT_SOURCES}
         )
     endif()
 endif()
 
-target_link_libraries(uchariot-qt-driverstation PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(driverstation PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.uchariot-qt-driverstation)
+  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.driverstation)
 endif()
-set_target_properties(uchariot-qt-driverstation PROPERTIES
+set_target_properties(driverstation PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -66,16 +66,15 @@ set_target_properties(uchariot-qt-driverstation PROPERTIES
 )
 
 include(GNUInstallDirs)
-install(TARGETS uchariot-qt-driverstation
+install(TARGETS driverstation
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(uchariot-qt-driverstation)
+    qt_finalize_executable(driverstation)
 endif()
-# break
 
 set(SDL2_DIR "/opt/homebrew/Cellar/sdl2/2.30.4")
 find_package(SDL2 REQUIRED)
@@ -88,4 +87,4 @@ if(NOT SDL2_LIBRARIES)
 endif()
 
 # Link SDL2 libraries with ONLY uChariotBase
-target_link_libraries(uchariot-qt-driverstation PRIVATE ${SDL2_LIBRARIES})
+target_link_libraries(driverstation PRIVATE ${SDL2_LIBRARIES})

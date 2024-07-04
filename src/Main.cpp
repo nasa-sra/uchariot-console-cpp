@@ -4,24 +4,37 @@
 #include <QPalette>
 #include <QPushButton>
 #include <QSlider>
+#include <atomic>
+#include <chrono>
+#include <csignal>
 #include <iostream>
+#include <thread>
 
 #include "Joystick.h"
 #include "Network.h"
 
 Network network;
 Joystick joystick;
+std::atomic<bool> running(true);
 
 void handleEnable();
-
 void handleDisable();
+void signalHandler(int signum);
+void cleanUp();
 
 QPushButton *enableButton;
 QPushButton *disableButton;
+std::thread inputListener;
 
 int main(int argc, char *argv[]) {
+    std::signal(SIGINT, signalHandler);
+
     network.Start();
-    joystick.joystick();
+    joystick.init();
+
+    inputListener = std::thread([]() {
+        joystick.readJoystickInput(running);
+    });
 
     QApplication a(argc, argv);
 
@@ -53,7 +66,12 @@ int main(int argc, char *argv[]) {
     QObject::connect(disableButton, &QPushButton::clicked, handleDisable);
 
     window.show();
-    return a.exec();
+
+    // QT loop
+    int result = a.exec();
+
+    cleanUp();
+    return result;
 }
 
 void changeButtonColor(QPushButton *button, Qt::GlobalColor color) {
@@ -73,4 +91,21 @@ void handleEnable() {
 void handleDisable() {
     changeButtonColor(enableButton, Qt::gray);
     changeButtonColor(disableButton, Qt::red);
+}
+
+void signalHandler(int signum) {
+    std::cout << "Interrupt signal " << signum << " received\n";
+    running = false;
+    cleanUp();
+    exit(signum);
+}
+
+void cleanUp() {
+    running = false;
+    if (inputListener.joinable()) {
+        inputListener.join();
+        std::cout << "Thread shut down\n";
+    }
+    joystick.cleanUp();
+    std::cout << "Clean up finished";
 }
