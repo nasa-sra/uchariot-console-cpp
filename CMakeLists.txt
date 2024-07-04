@@ -84,4 +84,4 @@ endif()
 # target_include_directories(LogitechController PUBLIC ${SDL2_INCLUDE_DIRS})
 
 # Link SDL2 libraries with uChariotBase as well
-target_link_libraries(uchariot-qt-driverstation ${SDL2_LIBRARIES})
+target_link_libraries(uchariot-qt-driverstation PRIVATE ${SDL2_LIBRARIES})
