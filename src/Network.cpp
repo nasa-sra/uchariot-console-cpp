@@ -1,7 +1,6 @@
-#include "include/Network.h"
+#include "Network.h"
 
-void Network::Start()
-{
+void Network::Start() {
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
     sockaddr_in serverAddress;
@@ -24,8 +23,7 @@ void Network::Start()
     // close(clientSocket);
 }
 
-void Network::sendPacket()
-{
+void Network::sendPacket() {
     std::cout << "sending message" << std::endl;
     const char *message = "Hello, server!";
     send(clientSocket, message, strlen(message), 0);

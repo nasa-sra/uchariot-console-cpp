@@ -1,4 +1,4 @@
-#include "include/Joystick.h"
+#include "Joystick.h"
 
 void Joystick::joystick() {
     // int joysticks = SDL_Init(SDL_INIT_GAMECONTROLLER);

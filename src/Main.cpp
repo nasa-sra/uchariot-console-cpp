@@ -6,8 +6,8 @@
 #include <QSlider>
 #include <iostream>
 
-#include "include/Joystick.h"
-#include "include/Network.h"
+#include "Joystick.h"
+#include "Network.h"
 
 Network network;
 Joystick joystick;

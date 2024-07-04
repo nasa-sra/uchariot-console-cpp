@@ -9,13 +9,21 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Add the include directory to the list of include directories so we don't have to use relative paths
+include_directories(include)
+
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
-set(PROJECT_SOURCES
-        main.cpp
-        Network.cpp
-        Joystick.cpp
+# set(PROJECT_SOURCES
+#         src/Main.cpp
+#         src/Network.cpp
+#         src/Joystick.cpp
+# )
+
+# Alternative to manually adding each file
+file(GLOB_RECURSE PROJECT_SOURCES
+    "src/*.cpp"
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
