@@ -4,9 +4,7 @@
             "name": "Mac",
             "includePath": [
                 "${default}",
-                "/opt/homebrew/Cellar/qt/6.6.0_1/lib/QtWidgets.framework/Versions/A/Headers",
-                "/opt/homebrew/Cellar/qt/6.6.0_1/lib/QtWidgets.framework/Versions/A/Headers",
-                "/opt/homebrew/Cellar/qt/6.6.0_1/lib/QtWidgets.framework/Versions/A/Headers"
+                "${workspaceFolder}/include"
             ],
             "defines": [],
             "macFrameworkPath": [
