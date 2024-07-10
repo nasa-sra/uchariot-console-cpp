@@ -4,7 +4,7 @@ void Network::init() {
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
     serverAddress.sin_family = AF_INET;
-    serverAddress.sin_port = htons(8080);
+    serverAddress.sin_port = htons(8001);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 
     int connection = connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
@@ -61,11 +61,10 @@ std::string Network::createPacket(int speed, double forwards, double sideways) {
     d.Accept(writer);
 
     std::string buff = strbuf.GetString();
-    std::string buff2 = "[teleop_drive] " + buff;
+    std::string buff2 = "[teleop_drive] " + buff + ";";
     return buff2;
 }
 
-// '[teleop_drive] {{"speed": {speed}, "fwd": {drive_power}, "turn": {turn}}};'
 void Network::sendPacket(std::atomic<double> &sideAxis, std::atomic<double> &forwardsAxis, std::atomic<bool> &enabled) {
     while (true) {
         double forwardsAxisValue = 0;
