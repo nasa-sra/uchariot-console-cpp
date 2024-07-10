@@ -17,6 +17,7 @@ Network network;
 Joystick joystick;
 
 std::atomic<bool> running(true);
+std::atomic<bool> enabled(false);
 std::atomic<double> sideAxis(0);
 std::atomic<double> forwardsAxis(0);
 
@@ -41,7 +42,7 @@ int main(int argc, char *argv[]) {
     });
 
     networkThread = std::thread([]() {
-        network.sendPacket(sideAxis, forwardsAxis);
+        network.sendPacket(sideAxis, forwardsAxis, enabled);
     });
 
     QApplication a(argc, argv);
@@ -98,11 +99,13 @@ void changeButtonColor(QPushButton *button, Qt::GlobalColor color) {
 void handleEnable() {
     changeButtonColor(disableButton, Qt::gray);
     changeButtonColor(enableButton, Qt::green);
+    enabled.store(true);
 }
 
 void handleDisable() {
     changeButtonColor(enableButton, Qt::gray);
     changeButtonColor(disableButton, Qt::red);
+    enabled.store(false);
 }
 
 void signalHandler(int signum) {

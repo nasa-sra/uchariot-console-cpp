@@ -44,9 +44,15 @@ int Network::getConnectionStatus() {
     return getsockopt(clientSocket, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size);
 }
 
-void Network::sendPacket(std::atomic<double> &sideAxis, std::atomic<double> &forwardsAxis) {
+void Network::sendPacket(std::atomic<double> &sideAxis, std::atomic<double> &forwardsAxis, std::atomic<bool> &enabled) {
     while (true) {
-        std::string mess = "Forwards Axis: " + std::to_string(forwardsAxis.load()) + " Side Axis: " + std::to_string(sideAxis.load());
+        double forwardsAxisValue = 0;
+        double sideAxisValue = 0;
+        if (enabled) {
+            forwardsAxisValue = forwardsAxis.load();
+            sideAxisValue = sideAxis.load();
+        }
+        std::string mess = "Forwards Axis: " + std::to_string(forwardsAxisValue) + " Side Axis: " + std::to_string(sideAxisValue);
         const char *message = mess.c_str();
         send(clientSocket, message, strlen(message), 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(50));

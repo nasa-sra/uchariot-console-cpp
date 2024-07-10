@@ -17,6 +17,6 @@ class Network {
     int getConnectionStatus();
 
     void connectToChariot();
-    void sendPacket(std::atomic<double>& sideAxis, std::atomic<double>& forwardsAxis);
+    void sendPacket(std::atomic<double>& sideAxis, std::atomic<double>& forwardsAxis, std::atomic<bool>& enabled);
     void setRobotSpeed();
 };
