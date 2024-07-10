@@ -20,6 +20,7 @@ std::atomic<bool> running(true);
 std::atomic<bool> enabled(false);
 std::atomic<double> sideAxis(0);
 std::atomic<double> forwardsAxis(0);
+std::atomic<double> maxSpeed(2500);
 
 void handleEnable();
 void handleDisable();
@@ -42,7 +43,7 @@ int main(int argc, char *argv[]) {
     });
 
     networkThread = std::thread([]() {
-        network.sendPacket(sideAxis, forwardsAxis, enabled);
+        network.sendJoystickPackets(sideAxis, forwardsAxis, maxSpeed, enabled);
     });
 
     QApplication a(argc, argv);
@@ -65,18 +66,22 @@ int main(int argc, char *argv[]) {
 
     handleDisable();
 
-    // QSlider *slider = new QSlider(&window);
-    // slider->setOrientation(Qt::Horizontal);
-    // slider->setRange(0, 100);
-    // slider->setValue(0);
-    // slider->setGeometry(10, 90, 180, 30);
+    QLabel *maxSpeedLabel = new QLabel(&window);
+    maxSpeedLabel->setGeometry(10, 70, 180, 30);
+    maxSpeedLabel->setText("Max Speed: 2500");
 
-    // QLabel *forwardsAxisLabel = new QLabel(&window);
-
-    // forwardsAxisLabel->setText(QString::number(forwardsAxis));
+    QSlider *slider = new QSlider(&window);
+    slider->setOrientation(Qt::Horizontal);
+    slider->setRange(0, 5000);
+    slider->setValue(2500);
+    slider->setGeometry(10, 100, 180, 30);
 
     QObject::connect(enableButton, &QPushButton::clicked, handleEnable);
     QObject::connect(disableButton, &QPushButton::clicked, handleDisable);
+    QObject::connect(slider, &QSlider::valueChanged, [&](int value) {
+        maxSpeed.store(value);
+        maxSpeedLabel->setText("Max Speed: " + QString::number(value));
+    });
 
     window.show();
 
@@ -85,6 +90,10 @@ int main(int argc, char *argv[]) {
 
     cleanUp();
     return result;
+}
+
+void value(int k) {
+    std::cout << k << std::endl;
 }
 
 void changeButtonColor(QPushButton *button, Qt::GlobalColor color) {

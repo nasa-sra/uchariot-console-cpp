@@ -52,7 +52,7 @@ int main() {
 
     // specifying the address
     serverAddress.sin_family = AF_INET;
-    serverAddress.sin_port = htons(8080);
+    serverAddress.sin_port = htons(8001);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 
     // binding socket.
