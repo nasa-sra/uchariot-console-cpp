@@ -44,6 +44,28 @@ int Network::getConnectionStatus() {
     return getsockopt(clientSocket, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size);
 }
 
+std::string Network::createPacket(int speed, double forwards, double sideways) {
+    rapidjson::Document d;
+    d.SetObject();
+
+    rapidjson::Document::AllocatorType &allocator = d.GetAllocator();
+
+    size_t sz = allocator.Size();
+
+    d.AddMember("speed", 2500, allocator);
+    d.AddMember("fwd", forwards, allocator);
+    d.AddMember("turn", sideways, allocator);
+
+    rapidjson::StringBuffer strbuf;
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(strbuf);
+    d.Accept(writer);
+
+    std::string buff = strbuf.GetString();
+    std::string buff2 = "[teleop_drive] " + buff;
+    return buff2;
+}
+
+// '[teleop_drive] {{"speed": {speed}, "fwd": {drive_power}, "turn": {turn}}};'
 void Network::sendPacket(std::atomic<double> &sideAxis, std::atomic<double> &forwardsAxis, std::atomic<bool> &enabled) {
     while (true) {
         double forwardsAxisValue = 0;
@@ -52,8 +74,12 @@ void Network::sendPacket(std::atomic<double> &sideAxis, std::atomic<double> &for
             forwardsAxisValue = forwardsAxis.load();
             sideAxisValue = sideAxis.load();
         }
-        std::string mess = "Forwards Axis: " + std::to_string(forwardsAxisValue) + " Side Axis: " + std::to_string(sideAxisValue);
-        const char *message = mess.c_str();
+
+        if (abs(forwardsAxisValue) < .01) forwardsAxisValue = 0;
+        if (abs(sideAxisValue) < .01) sideAxisValue = 0;
+
+        std::string buff = createPacket(2500, forwardsAxisValue, sideAxisValue);
+        const char *message = buff.c_str();
         send(clientSocket, message, strlen(message), 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }

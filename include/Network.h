@@ -7,6 +7,10 @@
 #include <atomic>
 #include <thread>
 #include <string>
+#include "rapidjson/document.h"
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/prettywriter.h>
+
 
 class Network {
    public:
@@ -16,6 +20,7 @@ class Network {
     void init();
     int getConnectionStatus();
 
+    std::string createPacket(int speed, double forwards, double sideways);
     void connectToChariot();
     void sendPacket(std::atomic<double>& sideAxis, std::atomic<double>& forwardsAxis, std::atomic<bool>& enabled);
     void setRobotSpeed();
