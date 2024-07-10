@@ -75,7 +75,8 @@
         "format": "cpp",
         "text_encoding": "cpp",
         "thread": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "functional": "cpp"
     },
     "cmake.configureOnOpen": true
 }

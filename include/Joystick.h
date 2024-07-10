@@ -7,6 +7,6 @@
 class Joystick {
    public:
     void init();
-    void readJoystickInput(std::atomic<bool>& running);
+    void readJoystickInput(std::atomic<bool>& running, std::atomic<double>& sideAxis, std::atomic<double>& forwardsAxis);
     void cleanUp();
 };

@@ -6,7 +6,7 @@ void Joystick::init() {
     }
 }
 
-void Joystick::readJoystickInput(std::atomic<bool>& running) {
+void Joystick::readJoystickInput(std::atomic<bool>& running, std::atomic<double>& sideAxis, std::atomic<double>& forwardsAxis) {
     if (SDL_NumJoysticks() < 1) {
         std::cerr << "No joysticks connected!" << std::endl;
     } else {
@@ -23,12 +23,21 @@ void Joystick::readJoystickInput(std::atomic<bool>& running) {
             bool quit = false;
             SDL_Event e;
             while (running) {
-                while (SDL_PollEvent(&e) != 0) {
+                while (SDL_PollEvent(&e)) {
                     if (e.type == SDL_QUIT) {
                         quit = true;
                     } else if (e.type == SDL_JOYAXISMOTION) {
-                        std::cout << "Axis " << e.jaxis.axis << " value: " << e.jaxis.value
-                                  << std::endl;
+                        if (e.jaxis.axis == 0) {
+                            sideAxis.store((double)(e.jaxis.value) / 32768.);
+                        } else if (e.jaxis.axis == 1) {
+                            forwardsAxis.store(-(double)(e.jaxis.value) / 32768.);
+                        }
+
+                        // if (e.jaxis.axis == 1) {
+                        //     std::cout << (e.jaxis.axis == 0 ? "Sideways" : "Forwards") << " Axis Value: " << e.jaxis.value
+                        //               << std::endl;
+                        // }
+
                     } else if (e.type == SDL_JOYBUTTONDOWN) {
                         std::cout << "Button " << (int)e.jbutton.button << " pressed."
                                   << std::endl;
@@ -37,7 +46,8 @@ void Joystick::readJoystickInput(std::atomic<bool>& running) {
                                   << std::endl;
                     }
                 }
-                std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
             }
 
             std::cout << "Joystick quit!\n";

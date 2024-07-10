@@ -15,7 +15,10 @@
 
 Network network;
 Joystick joystick;
+
 std::atomic<bool> running(true);
+std::atomic<double> sideAxis(0);
+std::atomic<double> forwardsAxis(0);
 
 void handleEnable();
 void handleDisable();
@@ -24,16 +27,21 @@ void cleanUp();
 
 QPushButton *enableButton;
 QPushButton *disableButton;
-std::thread inputListener;
+std::thread networkThread;
+std::thread inputThread;
 
 int main(int argc, char *argv[]) {
     std::signal(SIGINT, signalHandler);
 
-    network.Start();
+    network.init();
     joystick.init();
 
-    inputListener = std::thread([]() {
-        joystick.readJoystickInput(running);
+    inputThread = std::thread([]() {
+        joystick.readJoystickInput(running, sideAxis, forwardsAxis);
+    });
+
+    networkThread = std::thread([]() {
+        network.sendPacket(sideAxis, forwardsAxis);
     });
 
     QApplication a(argc, argv);
@@ -56,11 +64,15 @@ int main(int argc, char *argv[]) {
 
     handleDisable();
 
-    QSlider *slider = new QSlider(&window);
-    slider->setOrientation(Qt::Horizontal);
-    slider->setRange(0, 100);
-    slider->setValue(0);
-    slider->setGeometry(10, 90, 180, 30);
+    // QSlider *slider = new QSlider(&window);
+    // slider->setOrientation(Qt::Horizontal);
+    // slider->setRange(0, 100);
+    // slider->setValue(0);
+    // slider->setGeometry(10, 90, 180, 30);
+
+    // QLabel *forwardsAxisLabel = new QLabel(&window);
+
+    // forwardsAxisLabel->setText(QString::number(forwardsAxis));
 
     QObject::connect(enableButton, &QPushButton::clicked, handleEnable);
     QObject::connect(disableButton, &QPushButton::clicked, handleDisable);
@@ -102,9 +114,14 @@ void signalHandler(int signum) {
 
 void cleanUp() {
     running = false;
-    if (inputListener.joinable()) {
-        inputListener.join();
-        std::cout << "Thread shut down\n";
+    if (inputThread.joinable()) {
+        inputThread.join();
+        std::cout << "Input thread shut down\n";
+    }
+
+    if (networkThread.joinable()) {
+        networkThread.join();
+        std::cout << "Network thread shut down\n";
     }
     joystick.cleanUp();
     std::cout << "Clean up finished";

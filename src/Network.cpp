@@ -1,33 +1,54 @@
 #include "Network.h"
 
-void Network::Start() {
+void Network::init() {
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
-    sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(8080);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 
-    connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
+    int connection = connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
+}
 
-    // while (true)
-    // {
-    //     int error_code;
-    //     socklen_t error_code_size = sizeof(error_code);
-    //     std::cout << getsockopt(clientSocket, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size) << std::endl;
+int recursionNum = 0;
+void Network::connectToChariot() {
+    recursionNum++;
+    // std::cout << "connecting to chariot server... (" << unsigned(recursionNum) << std::endl;
+    if (recursionNum > 2) {
+        init();
+    };
+    int connection = connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
+
+    if (connection == 0) {
+        std::cout << "connection succesful." << std::endl;
+        const char *message = "Hello, server!";
+        send(clientSocket, message, strlen(message), 0);
+
+    } else if (connection == -1 && recursionNum < 500) {
+        // std::cout << "connection failed." << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        connectToChariot();
+    } else {
+        std::cout << "connection ultimately failed." << std::endl;
+    }
+
+    // while (getConnectionStatus() == 0) {
+    //     connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
+    //     // std::cout << "CONNECTION FAILURE" << std::endl;
     // }
-
-    // const char *message = "Hello, server!";
-    // send(clientSocket, message, strlen(message), 0);
-
-    // close(clientSocket);
 }
 
-void Network::sendPacket() {
-    std::cout << "sending message" << std::endl;
-    const char *message = "Hello, server!";
-    send(clientSocket, message, strlen(message), 0);
-    std::cout << "sent message" << std::endl;
+int Network::getConnectionStatus() {
+    int error_code;
+    socklen_t error_code_size = sizeof(error_code);
+    return getsockopt(clientSocket, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size);
 }
 
-// void Network::
+void Network::sendPacket(std::atomic<double> &sideAxis, std::atomic<double> &forwardsAxis) {
+    while (true) {
+        std::string mess = "Forwards Axis: " + std::to_string(forwardsAxis.load()) + " Side Axis: " + std::to_string(sideAxis.load());
+        const char *message = mess.c_str();
+        send(clientSocket, message, strlen(message), 0);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+}
