@@ -30,7 +30,7 @@ void cleanUp();
 QPushButton *enableButton;
 QPushButton *disableButton;
 std::thread networkThread;
-std::thread inputThread;
+std::thread joystickThread;
 
 int main(int argc, char *argv[]) {
     std::signal(SIGINT, signalHandler);
@@ -38,13 +38,14 @@ int main(int argc, char *argv[]) {
     network.init();
     joystick.init();
 
-    inputThread = std::thread([]() {
+    joystickThread = std::thread([]() {
         joystick.readJoystickInput(running, sideAxis, forwardsAxis);
     });
 
     networkThread = std::thread([]() {
-        network.sendJoystickPackets(sideAxis, forwardsAxis, maxSpeed, enabled);
+        network.sendInputPackets(sideAxis, forwardsAxis, maxSpeed, enabled);
     });
+
 
     QApplication a(argc, argv);
 
@@ -126,8 +127,8 @@ void signalHandler(int signum) {
 
 void cleanUp() {
     running = false;
-    if (inputThread.joinable()) {
-        inputThread.join();
+    if (joystickThread.joinable()) {
+        joystickThread.join();
         std::cout << "Input thread shut down\n";
     }
 
@@ -135,6 +136,7 @@ void cleanUp() {
         networkThread.join();
         std::cout << "Network thread shut down\n";
     }
+
     joystick.cleanUp();
     std::cout << "Clean up finished";
 }

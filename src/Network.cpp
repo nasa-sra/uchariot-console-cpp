@@ -5,7 +5,8 @@ void Network::init() {
 
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(8001);
-    serverAddress.sin_addr.s_addr = INADDR_ANY;
+    // serverAddress.sin_addr.s_addr = INADDR_ANY;
+    serverAddress.sin_addr.s_addr = inet_addr("10.93.24.9");
 
     int connection = connect(clientSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
 }
@@ -31,7 +32,7 @@ std::string Network::createPacket(double speed, double forwards, double sideways
     return buff2;
 }
 
-void Network::sendJoystickPackets(std::atomic<double> &sideAxis, std::atomic<double> &forwardsAxis, std::atomic<double> &maxSpeed, std::atomic<bool> &enabled) {
+void Network::sendInputPackets(std::atomic<double> &sideAxis, std::atomic<double> &forwardsAxis, std::atomic<double> &maxSpeed, std::atomic<bool> &enabled) {
     while (true) {
         double forwardsAxisValue = 0;
         double sideAxisValue = 0;

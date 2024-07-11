@@ -9,7 +9,7 @@
 #include <iostream>
 #include <string>
 #include <thread>
-
+#include <arpa/inet.h>
 #include "rapidjson/document.h"
 
 class Network {
@@ -20,5 +20,5 @@ class Network {
     void init();
 
     std::string createPacket(double speed, double forwards, double sideways);
-    void sendJoystickPackets(std::atomic<double>& sideAxis, std::atomic<double>& forwardsAxis, std::atomic<double>& maxSpeed, std::atomic<bool>& enabled);
+    void sendInputPackets(std::atomic<double>& sideAxis, std::atomic<double>& forwardsAxis, std::atomic<double>& maxSpeed, std::atomic<bool>& enabled);
 };

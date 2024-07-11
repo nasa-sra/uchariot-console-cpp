@@ -33,11 +33,6 @@ void Joystick::readJoystickInput(std::atomic<bool>& running, std::atomic<double>
                             forwardsAxis.store(-(double)(e.jaxis.value) / 32768.);
                         }
 
-                        // if (e.jaxis.axis == 1) {
-                        //     std::cout << (e.jaxis.axis == 0 ? "Sideways" : "Forwards") << " Axis Value: " << e.jaxis.value
-                        //               << std::endl;
-                        // }
-
                     } else if (e.type == SDL_JOYBUTTONDOWN) {
                         std::cout << "Button " << (int)e.jbutton.button << " pressed."
                                   << std::endl;
