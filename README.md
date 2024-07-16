@@ -1,4 +1,4 @@
-# driverstation-cpp-gui
+# uchariot-console-cpp
 
 ## Setup
 1. Install the QT application and install the libraries.
